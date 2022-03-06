@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# CS8601: Возможно, назначение-ссылка, допускающее значение NULL.
+dotnet_diagnostic.CS8601.severity = silent
+
+# IDE0044: Добавить модификатор только для чтения
+dotnet_diagnostic.IDE0044.severity = none
