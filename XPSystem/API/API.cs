@@ -42,7 +42,7 @@ namespace XPSystem
                 Name = "UNDEFINED",
                 Color = "red"
             };
-            foreach (var pair in Main.Instance.Config.LevelsBadge) // might seem ugly but this is actually O(n)
+            foreach (var pair in Main.Instance.Config.LevelsBadge)
             {
                 if (player.LVL < pair.Key)
                 {

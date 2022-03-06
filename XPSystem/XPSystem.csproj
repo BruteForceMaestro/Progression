@@ -18,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\..\exiled_ref\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
     <Reference Include="Mirror">
       <HintPath>..\..\exiled_ref\Mirror.dll</HintPath>
     </Reference>

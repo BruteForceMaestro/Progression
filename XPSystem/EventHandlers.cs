@@ -15,12 +15,15 @@ namespace XPSystem
                 ev.Player.OpenReportWindow(Main.Instance.Config.DNTHint);
                 return;
             }
-            PlayerLog log = new PlayerLog()
+            if (!Main.Players.TryGetValue(ev.Player.UserId, out var log))
             {
-                LVL = 0,
-                XP = 0
-            };
-            Main.Players[ev.Player.UserId] = log;
+                log = new PlayerLog()
+                {
+                    LVL = 0,
+                    XP = 0
+                };
+                Main.Players[ev.Player.UserId] = log;
+            }
             Timing.CallDelayed(0.15f, () => API.EvaluateRank(ev.Player, log));
         }
 
