@@ -61,7 +61,7 @@ namespace XPSystem
             JsonSerialization.Save();
         }
 
-        public bool LookUp(RoleType killer, Exiled.API.Features.Roles.Role target, out int xp)
+        public bool LookUp(RoleType killer, RoleType target, out int xp)
         {
             int xp1 = 0;
             bool retValue = Main.Instance.Config.KillXP.TryGetValue(killer, out var xp106) && xp106.TryGetValue(target, out xp1);
