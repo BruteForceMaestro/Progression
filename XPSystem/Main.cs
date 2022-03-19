@@ -1,4 +1,5 @@
 ﻿using Exiled.API.Features;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,10 +11,11 @@ namespace XPSystem
     public class Main : Plugin<Config>
     {
         EventHandlers handlers;
+        readonly Harmony harmony = new Harmony("com.nutmaster.rankchangepatch");
         public static Main Instance { get; set; }
         public static Dictionary<string, PlayerLog> Players { get; set; } = new Dictionary<string, PlayerLog>();
-        public override Version Version { get; } = new Version(1, 0, 8);
-        public override Version RequiredExiledVersion { get; } = new Version(5, 0, 0);
+        public override Version Version => new Version(1, 0, 8);
+        public override Version RequiredExiledVersion => new Version(5, 0, 0);
 
         private void Deserialize()
         {
@@ -33,6 +35,7 @@ namespace XPSystem
             Player.Escaping += handlers.OnEscape;
             Instance = this;
             Deserialize();
+            harmony.PatchAll();
             base.OnEnabled();
         }
 
@@ -43,6 +46,7 @@ namespace XPSystem
             Server.RoundEnded -= handlers.OnRoundEnd;
             Player.Escaping -= handlers.OnEscape;
             handlers = null;
+            harmony.UnpatchAll();
             base.OnDisabled();
         }
     }

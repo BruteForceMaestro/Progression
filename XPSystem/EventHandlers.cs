@@ -1,8 +1,8 @@
-﻿using Exiled.API.Features;
+﻿using Exiled.API.Enums;
+using Exiled.API.Features;
 using Exiled.Events.EventArgs;
-using Exiled.API.Enums;
-using System.Linq;
 using MEC;
+using System.Linq;
 
 namespace XPSystem
 {
@@ -24,7 +24,7 @@ namespace XPSystem
                 };
                 Main.Players[ev.Player.UserId] = log;
             }
-            Timing.CallDelayed(0.15f, () => API.EvaluateRank(ev.Player, log));
+            Timing.CallDelayed(0.15f, () => API.ApplyRank(ev.Player, log));
         }
 
         public void OnKill(DyingEventArgs ev)
@@ -63,13 +63,10 @@ namespace XPSystem
 
         public bool LookUp(RoleType killer, Exiled.API.Features.Roles.Role target, out int xp)
         {
-            xp = 0;
-            if (Main.Instance.Config.KillXP.TryGetValue(killer, out var xp106) && xp106.TryGetValue(target, out var xp1))
-            {
-                xp = xp1;
-                return true;
-            }
-            return false;
+            int xp1 = 0;
+            bool retValue = Main.Instance.Config.KillXP.TryGetValue(killer, out var xp106) && xp106.TryGetValue(target, out xp1);
+            xp = xp1;
+            return retValue;
         }
     }
 }

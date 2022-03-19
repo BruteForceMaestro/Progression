@@ -2,9 +2,9 @@
 
 namespace XPSystem
 {
-    static public class API
+    public static class API
     {
-        static public void AddXP(Player player, int xp)
+        public static void AddXP(Player player, int xp)
         {
             if (player.DoNotTrack || xp <= 0)
             {
@@ -21,21 +21,24 @@ namespace XPSystem
                 {
                     player.ShowHint(Main.Instance.Config.AddedLVLHint.Replace("%level%", log.LVL.ToString()));
                 }
-                EvaluateRank(player, log);
+                ApplyRank(player, log);
             }
             else if (Main.Instance.Config.ShowAddedXP)
             {
                 player.ShowHint($"+ <color=green>{xp}</color> XP");
             }
         }
-        static public void EvaluateRank(Player player, PlayerLog log)
+        public static void ApplyRank(Player player, PlayerLog log)
         {
-            string badgeText = player.Group == null ? string.Empty : player.Group.BadgeText;
             Badge badge = GetLVLBadge(log);
-            player.RankName = Main.Instance.Config.BadgeStructure.Replace("%lvl%", log.LVL.ToString()).Replace("%badge%", badge.Name).Replace("%oldbadge%", badgeText);
-            player.RankColor = badge.Color;
+            string RAColor = player.Group?.BadgeColor;
+
+            log.GeneratedBadge = badge.Name;
+            player.RankName = player.Group?.BadgeText ?? "";
+            player.RankColor = Main.Instance.Config.OverrideColor && RAColor != null ? RAColor : badge.Color;
         }
-        static private Badge GetLVLBadge(PlayerLog player)
+        
+        private static Badge GetLVLBadge(PlayerLog player)
         {
             Badge biggestLvl = new Badge
             {

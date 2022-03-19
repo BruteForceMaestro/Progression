@@ -4,7 +4,7 @@ using Utf8Json;
 
 namespace XPSystem
 {
-    internal class JsonSerialization
+    class JsonSerialization
     {
         static string SP = Main.Instance.Config.SavePath;
         public static void Save()

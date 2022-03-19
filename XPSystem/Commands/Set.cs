@@ -8,15 +8,12 @@ namespace XPSystem
 
     internal class Set : ICommand
     {
-        public string Command => "set";
-
-        public string[] Aliases => new string[] { };
-
         public static Set Instance { get; } = new Set();
+        public string Command => "set";
+        public string[] Aliases => Array.Empty<string>();
+        public string Description => $"set a certain value in player's lvl variable. {usage}";
 
         private readonly string usage = "Usage : XPSystem set (UserId | in-game id) (int amount)";
-
-        public string Description => $"set a certain value in player's lvl variable. {usage}";
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
@@ -41,7 +38,7 @@ namespace XPSystem
             {
                 player.LVL = lvl;
                 response = $"{byId.UserId}'s LVL is now {player.LVL}";
-                API.EvaluateRank(byId, player);
+                API.ApplyRank(byId, player);
                 return true;
             }
             else
