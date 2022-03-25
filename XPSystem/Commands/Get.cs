@@ -1,5 +1,4 @@
 ﻿using CommandSystem;
-using Exiled.API.Features;
 using Exiled.Permissions.Extensions;
 using System;
 
@@ -9,11 +8,11 @@ namespace XPSystem
     {
         public string Command => "get";
 
-        public static Get Instance { get; } = new Get();    
+        public static Get Instance { get; } = new Get();
 
         public string[] Aliases => new string[] { };
 
-        public string Description => "Gets the player's XP and LVL values by userid or in-game id";
+        public string Description => "Gets the player's XP and LVL values by userid";
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
@@ -27,14 +26,13 @@ namespace XPSystem
                 response = "Usage : XPSystem get (userid)";
                 return false;
             }
-            var byId = Player.Get(arguments.At(0));
-            if (byId == null)
+            PlayerLog log;
+            if (!Main.Players.TryGetValue(arguments.At(0), out log))
             {
-                response = "Invalid UserId or the player hasn't joined the server yet.";
+                response = "incorrect userid";
                 return false;
             }
-            PlayerLog player = Main.Players[byId.UserId];
-            response = $"UserId: {byId.UserId} | LVL: {player.LVL} | XP: {player.XP}";
+            response = $"LVL: {log.LVL} | XP: {log.XP}";
             return true;
         }
     }

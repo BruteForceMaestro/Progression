@@ -1,5 +1,4 @@
 ﻿using CommandSystem;
-using Exiled.API.Features;
 using Exiled.Permissions.Extensions;
 using System;
 
@@ -11,10 +10,7 @@ namespace XPSystem
         public static Set Instance { get; } = new Set();
         public string Command => "set";
         public string[] Aliases => Array.Empty<string>();
-        public string Description => $"set a certain value in player's lvl variable. {usage}";
-
-        private readonly string usage = "Usage : XPSystem set (UserId | in-game id) (int amount)";
-
+        public string Description => $"Set a certain value in player's lvl variable.";
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             if (!sender.CheckPermission("xps.set"))
@@ -24,28 +20,24 @@ namespace XPSystem
             }
             if (arguments.Count != 2)
             {
-                response = usage;
+                response = "Usage : XPSystem set (UserId | in-game id) (int amount)";
                 return false;
             }
-            var byId = Player.Get(arguments.At(0));
-            if (byId == null)
+            PlayerLog log;
+            if (!Main.Players.TryGetValue(arguments.At(0), out log))
             {
-                response = "Invalid UserId or the player hasn't joined the server yet.";
+                response = "incorrect userid";
                 return false;
             }
-            PlayerLog player = Main.Players[byId.UserId];
-            if (int.TryParse(arguments.At(1), out int lvl) && lvl >= 0)
+            if (int.TryParse(arguments.At(1), out int lvl) && lvl > 0)
             {
-                player.LVL = lvl;
-                response = $"{byId.UserId}'s LVL is now {player.LVL}";
-                API.ApplyRank(byId, player);
+                log.LVL = lvl;
+                response = $"{arguments.At(0)}'s LVL is now {log.LVL}";
+                log.ApplyRank();
                 return true;
             }
-            else
-            {
-                response = $"Invalid amount of LVLs : {lvl}";
-                return false;
-            }
+            response = $"Invalid amount of LVLs : {lvl}";
+            return false;
         }
     }
 }

@@ -15,15 +15,25 @@ namespace XPSystem.Patches
         {
             List<CodeInstruction> newInstructions = ListPool<CodeInstruction>.Shared.Rent(instructions);
             int index = 0;
-            Label skipLabel = generator.DefineLabel();
+            Label DNTLabel = generator.DefineLabel();
+            LocalBuilder player = generator.DeclareLocal(typeof(Player));
             var inserted = new[]
             {
                 new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Ldfld, Field(typeof(ServerRoles), nameof(ServerRoles._hub))),
                 new CodeInstruction(OpCodes.Call, Method(typeof(Player), nameof(Player.Get), new[] { typeof(ReferenceHub) })),
+                new CodeInstruction(OpCodes.Dup),
+                new CodeInstruction(OpCodes.Stloc, player.LocalIndex),
+                new CodeInstruction(OpCodes.Callvirt, PropertyGetter(typeof(Player), nameof(Player.DoNotTrack))),
+                new CodeInstruction(OpCodes.Brtrue_S, DNTLabel),
+                new CodeInstruction(OpCodes.Call, PropertyGetter(typeof(Main), nameof(Main.Players))),
+                new CodeInstruction(OpCodes.Ldloc, player.LocalIndex),
+                new CodeInstruction(OpCodes.Callvirt, PropertyGetter(typeof(Player), nameof(Player.UserId))),
+                new CodeInstruction(OpCodes.Callvirt, Method(typeof(Dictionary<string, PlayerLog>), "get_Item")), // cs0571 moment
                 new CodeInstruction(OpCodes.Ldarg_1),
-                new CodeInstruction(OpCodes.Call, Method(typeof(RankChangePatch), nameof(RankChangePatch.EvaluateRank))) ,
-                new CodeInstruction(OpCodes.Starg_S, 1)
+                new CodeInstruction(OpCodes.Callvirt, Method(typeof(PlayerLog), nameof(PlayerLog.EvaluateRank))),
+                new CodeInstruction(OpCodes.Starg_S, 1),
+                new CodeInstruction(OpCodes.Nop).WithLabels(DNTLabel)
             };
 
             newInstructions.InsertRange(index, inserted);
@@ -32,27 +42,6 @@ namespace XPSystem.Patches
                 yield return newInstructions[z];
 
             ListPool<CodeInstruction>.Shared.Return(newInstructions);
-        }
-
-        static string EvaluateRank(Player player, string badgeText) // more internal, used for transpiler
-        {
-            if (!Main.Players.TryGetValue(player.UserId, out PlayerLog log))
-            {
-                return "";
-            }
-
-            if (badgeText == log.ChangedBadge) // the settext method gets called twice because questionable NW networking, prevent duplication
-            {
-                return badgeText;
-            }
-
-            string rank = Main.Instance.Config.BadgeStructure
-                .Replace("%lvl%", log.LVL.ToString())
-                .Replace("%badge%", log.GeneratedBadge)
-                .Replace("%oldbadge%", badgeText);
-
-            log.ChangedBadge = rank;
-            return rank;
         }
     }
 }

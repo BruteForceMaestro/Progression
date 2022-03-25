@@ -12,6 +12,12 @@ namespace XPSystem
 
         [Description("Hint shown to the players if they have DNT enabled.")]
         public string DNTHint { get; set; } = "We can't track your stats while you have DNT enabled in your game options!";
+        [Description("Badge for players with DNT enabled.")]
+        public Badge DNTBadge { get; set; } = new Badge
+        {
+            Name = "(DNT) anonymous man????",
+            Color = "nickel"
+        };
 
         [Description("(You may add your own entries) Role1: Role2: XP player with Role1 gets for killing a person with Role2 ")]
         public Dictionary<RoleType, Dictionary<RoleType, int>> KillXP { get; set; } = new Dictionary<RoleType, Dictionary<RoleType, int>>()

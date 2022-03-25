@@ -14,12 +14,12 @@ namespace XPSystem
         readonly Harmony harmony = new Harmony("com.nutmaster.rankchangepatch");
         public static Main Instance { get; set; }
         public static Dictionary<string, PlayerLog> Players { get; set; } = new Dictionary<string, PlayerLog>();
-        public override Version Version => new Version(1, 0, 8);
+        public override Version Version => new Version(1, 2, 0);
         public override Version RequiredExiledVersion => new Version(5, 0, 0);
 
         private void Deserialize()
         {
-            if (!File.Exists(Instance.Config.SavePath))
+            if (!File.Exists(Instance.Config.SavePath)) // prevent filenotfound
             {
                 JsonSerialization.Save();
                 return;

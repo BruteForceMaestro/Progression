@@ -5,9 +5,9 @@ namespace XPSystem
 {
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     [CommandHandler(typeof(GameConsoleCommandHandler))]
-    internal class XPSystem : ParentCommand
+    internal class Parent : ParentCommand
     {
-        public XPSystem() => LoadGeneratedCommands();
+        public Parent() => LoadGeneratedCommands();
         public override string Command => "XPSystem";
 
         public override string[] Aliases => new string[] { "xps" };

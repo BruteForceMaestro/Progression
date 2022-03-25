@@ -1,7 +1,6 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs;
-using MEC;
 using System.Linq;
 
 namespace XPSystem
@@ -13,23 +12,23 @@ namespace XPSystem
             if (ev.Player.DoNotTrack)
             {
                 ev.Player.OpenReportWindow(Main.Instance.Config.DNTHint);
+                ev.Player.RankName = Main.Instance.Config.DNTBadge.Name;
+                ev.Player.RankColor = Main.Instance.Config.DNTBadge.Color;
                 return;
             }
-            if (!Main.Players.TryGetValue(ev.Player.UserId, out var log))
+            if (!Main.Players.TryGetValue(ev.Player.UserId, out PlayerLog log))
             {
-                log = new PlayerLog()
-                {
-                    LVL = 0,
-                    XP = 0
-                };
+                log = new PlayerLog(ev.Player);
                 Main.Players[ev.Player.UserId] = log;
+                return;
             }
-            Timing.CallDelayed(0.15f, () => API.ApplyRank(ev.Player, log));
+            log.Player = ev.Player;
+            log.ApplyRank();
         }
 
         public void OnKill(DyingEventArgs ev)
         {
-            if (ev.Target == null)
+            if (ev.Target == null || ev.Target.DoNotTrack)
             {
                 return;
             }
@@ -38,15 +37,18 @@ namespace XPSystem
             {
                 return;
             }
-            if (LookUp(killer.Role, ev.Target.Role, out int xp))
+            if (Main.Instance.Config.KillXP.TryGetValue(killer.Role, out var killxpdict) && killxpdict.TryGetValue(ev.Target.Role, out int xp))
             {
-                API.AddXP(killer, xp);
+                Main.Players[ev.Killer.UserId].AddXP(xp);
             }
         }
 
         public void OnEscape(EscapingEventArgs ev)
         {
-            API.AddXP(ev.Player, Main.Instance.Config.EscapeXP[ev.Player.Role]);
+            if (Main.Players.TryGetValue(ev.Player.UserId, out PlayerLog log))
+            {
+                log.AddXP(Main.Instance.Config.EscapeXP[ev.Player.Role]);
+            }
         }
 
         public void OnRoundEnd(RoundEndedEventArgs ev)
@@ -55,18 +57,10 @@ namespace XPSystem
             {
                 if (player.LeadingTeam == ev.LeadingTeam)
                 {
-                    API.AddXP(player, Main.Instance.Config.TeamWinXP);
+                    Main.Players[player.UserId].AddXP(Main.Instance.Config.TeamWinXP);
                 }
             }
             JsonSerialization.Save();
-        }
-
-        public bool LookUp(RoleType killer, Exiled.API.Features.Roles.Role target, out int xp)
-        {
-            int xp1 = 0;
-            bool retValue = Main.Instance.Config.KillXP.TryGetValue(killer, out var xp106) && xp106.TryGetValue(target, out xp1);
-            xp = xp1;
-            return retValue;
         }
     }
 }
