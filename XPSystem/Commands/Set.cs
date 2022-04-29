@@ -1,6 +1,7 @@
 ﻿using CommandSystem;
 using Exiled.Permissions.Extensions;
 using System;
+using Exiled.API.Features;
 
 namespace XPSystem
 {
@@ -24,7 +25,7 @@ namespace XPSystem
                 return false;
             }
             PlayerLog log;
-            if (!Main.Players.TryGetValue(arguments.At(0), out log))
+            if (!Main.Players.TryGetValue(Player.Get(sender).UserId, out log) && !Main.Players.TryGetValue(arguments.At(0), out log))
             {
                 response = "incorrect userid";
                 return false;

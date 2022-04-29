@@ -20,6 +20,7 @@ namespace XPSystem
             {
                 log = new PlayerLog(ev.Player);
                 Main.Players[ev.Player.UserId] = log;
+                log.NewQuest();
                 return;
             }
             log.Player = ev.Player;
@@ -41,6 +42,12 @@ namespace XPSystem
             {
                 Main.Players[ev.Killer.UserId].AddXP(xp);
             }
+
+            if (Main.Players.TryGetValue(ev.Killer.UserId, out var playerLog) &&
+                playerLog.CurrentQuest.Type == QuestTypes.Kills && playerLog.CurrentQuest.Side == ev.Killer.Role.Side)
+            {
+                playerLog.AddProgress(1);
+            }
         }
 
         public void OnEscape(EscapingEventArgs ev)
@@ -61,6 +68,24 @@ namespace XPSystem
                 }
             }
             JsonSerialization.Save();
+        }
+
+        public void InteractingDoor(InteractingDoorEventArgs ev)
+        {
+            if (Main.Players.TryGetValue(ev.Player.UserId, out var playerLog) &&
+                playerLog.CurrentQuest.Type == QuestTypes.Doors && playerLog.CurrentQuest.Side == ev.Player.Role.Side)
+            {
+                playerLog.AddProgress(1);
+            }
+        }
+
+        public void UsedItem(UsedItemEventArgs ev)
+        {
+            if (Main.Players.TryGetValue(ev.Player.UserId, out var playerLog) &&
+                playerLog.CurrentQuest.Type == QuestTypes.UseItem && playerLog.CurrentQuest.Side == ev.Player.Role.Side)
+            {
+                playerLog.AddProgress(1);
+            }
         }
     }
 }

@@ -10,7 +10,6 @@ namespace XPSystem.Patches
     [HarmonyPatch(typeof(ServerRoles), nameof(ServerRoles.SetText))]
     public class RankChangePatch
     {
-
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             List<CodeInstruction> newInstructions = ListPool<CodeInstruction>.Shared.Rent(instructions);

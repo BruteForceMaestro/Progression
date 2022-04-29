@@ -10,12 +10,15 @@ namespace XPSystem
 {
     public class Main : Plugin<Config>
     {
+        public override string Author { get; } = "nutmaster#486";
+        public override string Name { get; } = "XPSystem";
+        public override Version Version => new Version(1, 3, 0);
+        public override Version RequiredExiledVersion => new Version(5, 2, 0);
+        
         EventHandlers handlers;
         readonly Harmony harmony = new Harmony("com.nutmaster.rankchangepatch");
         public static Main Instance { get; set; }
         public static Dictionary<string, PlayerLog> Players { get; set; } = new Dictionary<string, PlayerLog>();
-        public override Version Version => new Version(1, 2, 0);
-        public override Version RequiredExiledVersion => new Version(5, 0, 0);
 
         private void Deserialize()
         {
@@ -29,11 +32,13 @@ namespace XPSystem
         public override void OnEnabled()
         {
             handlers = new EventHandlers();
+            Instance = this;
             Player.Verified += handlers.OnJoined;
             Player.Dying += handlers.OnKill;
             Server.RoundEnded += handlers.OnRoundEnd;
             Player.Escaping += handlers.OnEscape;
-            Instance = this;
+            Player.UsedItem += handlers.UsedItem;
+            Player.InteractingDoor += handlers.InteractingDoor;
             Deserialize();
             harmony.PatchAll();
             base.OnEnabled();
@@ -45,8 +50,10 @@ namespace XPSystem
             Player.Dying -= handlers.OnKill;
             Server.RoundEnded -= handlers.OnRoundEnd;
             Player.Escaping -= handlers.OnEscape;
+            Player.UsedItem -= handlers.UsedItem;
+            Player.InteractingDoor -= handlers.InteractingDoor;
             handlers = null;
-            harmony.UnpatchAll();
+            harmony.UnpatchAll(harmony.Id);
             base.OnDisabled();
         }
     }

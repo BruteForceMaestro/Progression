@@ -3,6 +3,7 @@ using Exiled.API.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using Exiled.API.Enums;
 
 namespace XPSystem
 {
@@ -19,6 +20,17 @@ namespace XPSystem
             Color = "nickel"
         };
 
+        [Description("Translations for each quest type")] 
+        public Dictionary<QuestTypes, string> typeTranslations = new Dictionary<QuestTypes, string>()
+        {
+            {QuestTypes.Kills, "Current quest: %QuestName%, Progress: Kill %Progress%/%Amount% %Side%(s)"},
+            {QuestTypes.Doors, "Current quest: %QuestName%, Progress: Open/Close %Progress%/%Amount% door(s)"},
+            {QuestTypes.UseItem, "Current quest: %QuestName%, Progress: use %Progress%/%Amount% item(s)"}
+        };
+
+        [Description("Message shown on quest completion")]
+        public string CompletionMessage { get; set; } = "Completed %QuestName%, reward: %XP% xp";
+        
         [Description("(You may add your own entries) Role1: Role2: XP player with Role1 gets for killing a person with Role2 ")]
         public Dictionary<RoleType, Dictionary<RoleType, int>> KillXP { get; set; } = new Dictionary<RoleType, Dictionary<RoleType, int>>()
         {
@@ -54,6 +66,20 @@ namespace XPSystem
             }
         };
 
+        [Description("(You may add your own entries) Name: Name to display; XP: Amount of XP the give upon completion; Amount: How often to do task; Weight: Weight of quest, the higher the weight, the more likely you are to get the quest; Side: As what side you can progress on the quest; Type: The type of action to perform")]
+        public Quest[] Quests { get; set; } =
+        {
+            new Quest
+            {
+                Name = "For the Foundation",
+                XP = 2000,
+                Amount = 10,
+                Weight = 0.5f,
+                Side = Side.Mtf,
+                Type = QuestTypes.Kills,
+            },
+        };
+        
         [Description("How many XP should a player get if their team wins.")]
         public int TeamWinXP { get; set; } = 250;
 
@@ -108,8 +134,10 @@ namespace XPSystem
 
         [Description("The structure of the badge displayed in-game. Variables: %lvl% - the level. %badge% earned badge in specified in LevelsBadge. %oldbadge% - base-game badge, like ones specified in config-remoteadmin, or a global badge. can be null.")]
         public string BadgeStructure { get; set; } = "(LVL %lvl% | %badge%) %oldbadge%";
+        
         [Description("Path files get saved to. Requires change on linux.")]
         public string SavePath { get; set; } = Path.Combine(Paths.Configs, @"Players.json");
+        
         [Description("Override colors for people who already have a rank")]
         public bool OverrideColor { get; set; } = false;
     }

@@ -1,4 +1,6 @@
-﻿using Exiled.API.Features;
+﻿using System.Linq;
+using Exiled.API.Features;
+using UnityEngine;
 
 namespace XPSystem
 {
@@ -12,11 +14,13 @@ namespace XPSystem
         {
             XP = log.XP;
             LVL = log.LVL;
+            CurrentQuest = log.CurrentQuest;
         }
         public PlayerLog(Player player)
         {
             XP = 0;
             LVL = 0;
+            CurrentQuest = null;
             Player = player;
         }
         public void AddXP(int xp)
@@ -67,6 +71,36 @@ namespace XPSystem
             return rank;
         }
 
+        public void AddProgress(int amount)
+        {
+            if (CurrentQuest.Progress+amount >= CurrentQuest.Amount)
+            {
+                Player.ShowHint(Main.Instance.Config.CompletionMessage
+                    .Replace("%QuestName%", CurrentQuest.Name)
+                    .Replace("%XP%", CurrentQuest.XP.ToString()), 8f);
+                AddXP(CurrentQuest.XP);
+                NewQuest();
+            }
+            else
+            {
+                CurrentQuest.Progress += amount;
+            }
+        }
+        
+        public void NewQuest()
+        {
+            if(Main.Instance.Config.Quests == null || Main.Instance.Config.Quests.Length == 0) 
+                return;
+
+            float totalweight = 0;
+            foreach (var quest in Main.Instance.Config.Quests)
+            {
+                totalweight += quest.Weight;
+            }
+            float rnd = Random.Range(0f, totalweight);
+            CurrentQuest = Main.Instance.Config.Quests.First(i => (rnd -= i.Weight) < 0);
+        }
+
         Badge GetLVLBadge()
         {
             Badge biggestLvl = new Badge
@@ -83,6 +117,6 @@ namespace XPSystem
                 biggestLvl = pair.Value;
             }
             return biggestLvl;
-        }        
+        }
     }
 }
