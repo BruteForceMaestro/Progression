@@ -2,6 +2,8 @@
 using Exiled.API.Features;
 using Exiled.Events.EventArgs;
 using System.Linq;
+using MEC;
+using System.Collections.Generic;
 
 namespace XPSystem
 {
@@ -16,36 +18,52 @@ namespace XPSystem
                 ev.Player.RankColor = Main.Instance.Config.DNTBadge.Color;
                 return;
             }
-            if (!Main.Players.TryGetValue(ev.Player.UserId, out PlayerLog log))
+            Timing.RunCoroutine(JoinedCoroutine(ev.Player));
+        }
+
+        private IEnumerator<float> JoinedCoroutine(Player player)
+        {
+            yield return Timing.WaitForOneFrame;
+            if (!Main.Players.TryGetValue(player.UserId, out PlayerLogSer log))
             {
-                log = new PlayerLog(ev.Player);
-                Main.Players[ev.Player.UserId] = log;
+                log = new PlayerLogSer() { LVL = 0, XP = 0 };
+                Main.Players[player.UserId] = log;
+            }
+            PlayerLog activeLog = new PlayerLog(log, player);
+            Main.ActivePlayers[player.UserId] = activeLog;
+        }
+
+        public void OnLeaving(LeftEventArgs ev)
+        {
+            if (ev.Player.DoNotTrack)
+            {
                 return;
             }
-            log.Player = ev.Player;
-            log.ApplyRank();
+            Main.ActivePlayers.Remove(ev.Player.UserId);
         }
 
         public void OnKill(DyingEventArgs ev)
         {
-            if (ev.Target == null || ev.Target.DoNotTrack)
+            if (ev.Target == null)
             {
                 return;
             }
+
             Player killer = ev.Handler.Type == DamageType.PocketDimension ? Player.Get(RoleType.Scp106).FirstOrDefault() : ev.Killer;
-            if (killer == null)
+            if (killer == null || killer.DoNotTrack)
             {
                 return;
             }
+
             if (Main.Instance.Config.KillXP.TryGetValue(killer.Role, out var killxpdict) && killxpdict.TryGetValue(ev.Target.Role, out int xp))
             {
-                Main.Players[ev.Killer.UserId].AddXP(xp);
+                Main.ActivePlayers[ev.Killer.UserId].AddXP(xp);
             }
         }
 
         public void OnEscape(EscapingEventArgs ev)
         {
-            if (Main.Players.TryGetValue(ev.Player.UserId, out PlayerLog log))
+            if (Main.ActivePlayers.TryGetValue(ev.Player.UserId, out PlayerLog log))
             {
                 log.AddXP(Main.Instance.Config.EscapeXP[ev.Player.Role]);
             }
@@ -55,12 +73,13 @@ namespace XPSystem
         {
             foreach (Player player in Player.List)
             {
-                if (player.LeadingTeam == ev.LeadingTeam)
+                if (player.LeadingTeam == ev.LeadingTeam && !player.DoNotTrack)
                 {
-                    Main.Players[player.UserId].AddXP(Main.Instance.Config.TeamWinXP);
+                    Main.ActivePlayers[player.UserId].AddXP(Main.Instance.Config.TeamWinXP);
                 }
             }
             JsonSerialization.Save();
+            Main.ActivePlayers.Clear();
         }
     }
 }

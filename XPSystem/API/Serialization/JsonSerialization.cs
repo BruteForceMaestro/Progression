@@ -11,10 +11,9 @@ namespace XPSystem
         static string SP = Main.Instance.Config.SavePath;
         public static void Save()
         {
-            var PlayerLogDict = new Dictionary<string, PlayerLogSerializable>();
-            foreach (var playerLogInternal in Main.Players)
+            foreach (var kvp in Main.ActivePlayers)
             {
-                PlayerLogDict[playerLogInternal.Key] = playerLogInternal.Value;
+                Main.Players[kvp.Key] = kvp.Value;
             }
             using (FileStream fs = File.Create(SP))
             {
@@ -26,11 +25,7 @@ namespace XPSystem
             string text = File.ReadAllText(SP);
             try
             {
-                var PlayerLogDict = JsonSerializer.Deserialize<Dictionary<string, PlayerLogSerializable>>(text);
-                foreach (var playerLog in PlayerLogDict)
-                {
-                    Main.Players[playerLog.Key] = new PlayerLog(playerLog.Value);
-                }
+                Main.Players = JsonSerializer.Deserialize<Dictionary<string, PlayerLogSer>>(text);
             }
             catch (IndexOutOfRangeException)
             {

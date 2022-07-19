@@ -1,24 +1,22 @@
 ﻿using Exiled.API.Features;
+using MEC;
+using System.Collections.Generic;
 
 namespace XPSystem
 {
-    // unserializable version of playerlog meant for regular use
-    public class PlayerLog : PlayerLogSerializable
+    // unserializable version meant for regular use in active players
+    public class PlayerLog : PlayerLogSer
     {
-        private string customRank;
-        private string rank;
-        public Player Player { get; set; }        
-        public PlayerLog(PlayerLogSerializable log)
+        public Player Player { get; set; }       
+
+        public PlayerLog(PlayerLogSer log, Player player)
         {
             XP = log.XP;
             LVL = log.LVL;
-        }
-        public PlayerLog(Player player)
-        {
-            XP = 0;
-            LVL = 0;
             Player = player;
+            ApplyRank();
         }
+
         public void AddXP(int xp)
         {
             XP += xp;
@@ -29,8 +27,7 @@ namespace XPSystem
                 XP -= lvlsGained * Main.Instance.Config.XPPerLevel;
                 if (Main.Instance.Config.ShowAddedLVL)
                 {
-                    Player.ShowHint(Main.Instance.Config.AddedLVLHint
-                        .Replace("%level%", LVL.ToString()));
+                    Player.ShowHint(Main.Instance.Config.AddedLVLHint.Replace("%level%", LVL.ToString()));
                 }
                 ApplyRank();
             }
@@ -42,32 +39,30 @@ namespace XPSystem
 
         public void ApplyRank()
         {
-            Player.RankName = customRank ?? Player.Group?.BadgeText ?? "";
-        }
+            Badge badge = GetLVLBadge();
 
-        public string EvaluateRank(string badgeText) // more internal, used for transpiler
-        {
-            if (badgeText == rank) // the settext method gets called twice because questionable NW networking, prevent duplication
+            if (!Main.Instance.Config.OverrideRAColor && Player.Group != null)
             {
-                return badgeText;
+                Player.RankColor = Player.Group.BadgeColor;
+            }
+            else
+            {
+                Player.RankColor = badge.Color;
             }
 
-            Badge badge = GetLVLBadge();
-            string new_rank = Main.Instance.Config.BadgeStructure
+            string oldBadge = Player.Group?.BadgeText ?? "";
+
+            string newBadge = Main.Instance.Config.BadgeStructure
                 .Replace("%lvl%", LVL.ToString())
                 .Replace("%badge%", badge.Name)
-                .Replace("%oldbadge%", badgeText);
+                .Replace("%oldbadge%", oldBadge);
 
-            rank = new_rank;
-            customRank = badgeText;
+            Log.Debug(newBadge, Main.Instance.Config.DebugMode);
 
-            string raColor = Player.Group?.BadgeColor;
-            Player.RankColor = Main.Instance.Config.OverrideColor && raColor != null ? raColor : badge.Color;
-
-            return rank;
+            Player.RankName = newBadge;
         }
 
-        Badge GetLVLBadge()
+        private Badge GetLVLBadge()
         {
             Badge biggestLvl = new Badge
             {

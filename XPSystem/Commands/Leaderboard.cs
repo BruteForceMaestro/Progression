@@ -1,7 +1,9 @@
 ﻿using CommandSystem;
 using Exiled.Permissions.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace XPSystem
 {
@@ -41,16 +43,14 @@ namespace XPSystem
 
         private string GetTopPlayers(int amount)
         {
-            var sorted = Main.Players.OrderByDescending(o => o.Value.LVL);
-            var players = sorted.Take(amount);
-            string str = "";
-            int index = 1;
-            foreach (var log in players)
+            var players = Main.Players.OrderByDescending(o => o.Value.LVL).Take(amount);
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i <= amount; i++)
             {
-                str += $"{index}. ({log.Key}) : LVL{log.Value.LVL}, XP: {log.Value.XP}\n";
-                index++;
+                KeyValuePair<string, PlayerLogSer> log = players.ElementAt(i);
+                builder.AppendLine($"{i + 1}. ({log.Key}) : LVL{log.Value.LVL}, XP: {log.Value.XP}");
             }
-            return str;
+            return builder.ToString();
         }
     }
 }

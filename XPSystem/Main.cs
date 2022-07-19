@@ -13,7 +13,8 @@ namespace XPSystem
         EventHandlers handlers;
         readonly Harmony harmony = new Harmony("com.nutmaster.rankchangepatch");
         public static Main Instance { get; set; }
-        public static Dictionary<string, PlayerLog> Players { get; set; } = new Dictionary<string, PlayerLog>();
+        public static Dictionary<string, PlayerLogSer> Players { get; set; } = new Dictionary<string, PlayerLogSer>();
+        public static Dictionary<string, PlayerLog> ActivePlayers { get; set; } = new Dictionary<string, PlayerLog>(); // added to prevent situations where it is unknown if player is on the server or not.
         public override Version Version => new Version(1, 2, 0);
         public override Version RequiredExiledVersion => new Version(5, 0, 0);
 
@@ -33,6 +34,7 @@ namespace XPSystem
             Player.Dying += handlers.OnKill;
             Server.RoundEnded += handlers.OnRoundEnd;
             Player.Escaping += handlers.OnEscape;
+            Player.Left += handlers.OnLeaving;
             Instance = this;
             Deserialize();
             harmony.PatchAll();
@@ -45,6 +47,7 @@ namespace XPSystem
             Player.Dying -= handlers.OnKill;
             Server.RoundEnded -= handlers.OnRoundEnd;
             Player.Escaping -= handlers.OnEscape;
+            Player.Left -= handlers.OnLeaving;
             handlers = null;
             harmony.UnpatchAll();
             base.OnDisabled();

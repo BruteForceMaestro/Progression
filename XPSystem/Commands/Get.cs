@@ -26,10 +26,9 @@ namespace XPSystem
                 response = "Usage : XPSystem get (userid)";
                 return false;
             }
-            PlayerLog log;
-            if (!Main.Players.TryGetValue(arguments.At(0), out log))
+            if (!Main.Players.TryGetValue(arguments.At(0), out PlayerLogSer log))
             {
-                response = "incorrect userid";
+                response = "invalid ID";
                 return false;
             }
             response = $"LVL: {log.LVL} | XP: {log.XP}";

@@ -20,20 +20,23 @@ namespace XPSystem
             }
             if (arguments.Count != 2)
             {
-                response = "Usage : XPSystem set (UserId | in-game id) (int amount)";
+                response = "Usage : XPSystem set (UserId) (int amount)";
                 return false;
             }
-            PlayerLog log;
-            if (!Main.Players.TryGetValue(arguments.At(0), out log))
+            string id = arguments.At(0);
+            if (!Main.Players.TryGetValue(id, out PlayerLogSer log))
             {
-                response = "incorrect userid";
+                response = "invalid ID";
                 return false;
             }
-            if (int.TryParse(arguments.At(1), out int lvl) && lvl > 0)
+            if (int.TryParse(arguments.At(1), out int lvl))
             {
                 log.LVL = lvl;
-                response = $"{arguments.At(0)}'s LVL is now {log.LVL}";
-                log.ApplyRank();
+                response = $"{id}'s LVL is now {log.LVL}";
+                if (Main.ActivePlayers.TryGetValue(id, out PlayerLog activeLog))
+                {
+                    activeLog.ApplyRank();
+                }
                 return true;
             }
             response = $"Invalid amount of LVLs : {lvl}";

@@ -76,7 +76,7 @@ namespace XPSystem
             [RoleType.Scientist] = 300
         };
 
-        [Description("(You may add your own entries) Level threshold and a badge. %color%. if you get a TAG FAIL in your console, either change your color, or remove special characters like brackets.")]
+        [Description("(You may add your own entries) Level threshold and a badge. if you get a TAG FAIL in your console, either change your color, or remove special characters like brackets.")]
         public Dictionary<int, Badge> LevelsBadge { get; set; } = new Dictionary<int, Badge>()
         {
             [0] = new Badge
@@ -111,6 +111,8 @@ namespace XPSystem
         [Description("Path files get saved to. Requires change on linux.")]
         public string SavePath { get; set; } = Path.Combine(Paths.Configs, @"Players.json");
         [Description("Override colors for people who already have a rank")]
-        public bool OverrideColor { get; set; } = false;
+        public bool OverrideRAColor { get; set; } = false;
+        [Description("Do not enable this unless the creator told you to, if you don't wanna be spammed with unhelpful messages of course")]
+        public bool DebugMode { get; set; } = false;
     }
 }
