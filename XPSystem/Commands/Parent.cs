@@ -5,6 +5,7 @@ namespace XPSystem
 {
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     [CommandHandler(typeof(GameConsoleCommandHandler))]
+    [CommandHandler(typeof(ClientCommandHandler))]
     internal class Parent : ParentCommand
     {
         public Parent() => LoadGeneratedCommands();

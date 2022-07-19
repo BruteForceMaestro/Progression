@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("XPSystem")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("nutmaster#4861")]
+[assembly: AssemblyCompany("mike ock#4861")]
 [assembly: AssemblyProduct("XPSystem")]
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]

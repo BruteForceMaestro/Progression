@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Player = Exiled.Events.Handlers.Player;
+using Scp079 = Exiled.Events.Handlers.Scp079;
 using Server = Exiled.Events.Handlers.Server;
 
 namespace XPSystem
@@ -15,7 +16,7 @@ namespace XPSystem
         public static Main Instance { get; set; }
         public static Dictionary<string, PlayerLogSer> Players { get; set; } = new Dictionary<string, PlayerLogSer>();
         public static Dictionary<string, PlayerLog> ActivePlayers { get; set; } = new Dictionary<string, PlayerLog>(); // added to prevent situations where it is unknown if player is on the server or not.
-        public override Version Version => new Version(1, 2, 0);
+        public override Version Version => new Version(1, 2, 1);
         public override Version RequiredExiledVersion => new Version(5, 0, 0);
 
         private void Deserialize()
@@ -35,6 +36,7 @@ namespace XPSystem
             Server.RoundEnded += handlers.OnRoundEnd;
             Player.Escaping += handlers.OnEscape;
             Player.Left += handlers.OnLeaving;
+            Scp079.GainingExperience += handlers.OnAssist;
             Instance = this;
             Deserialize();
             harmony.PatchAll();
@@ -48,6 +50,7 @@ namespace XPSystem
             Server.RoundEnded -= handlers.OnRoundEnd;
             Player.Escaping -= handlers.OnEscape;
             Player.Left -= handlers.OnLeaving;
+            Scp079.GainingExperience -= handlers.OnAssist;
             handlers = null;
             harmony.UnpatchAll();
             base.OnDisabled();

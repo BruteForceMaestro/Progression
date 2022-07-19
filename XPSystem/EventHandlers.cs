@@ -42,6 +42,19 @@ namespace XPSystem
             Main.ActivePlayers.Remove(ev.Player.UserId);
         }
 
+        public void OnAssist(GainingExperienceEventArgs ev)
+        {
+            if (ev.GainType != ExpGainType.KillAssist && ev.GainType != ExpGainType.DirectKill && ev.GainType != ExpGainType.PocketAssist)
+            {
+                return;
+            }
+            if (ev.Player.DoNotTrack)
+            {
+                return;
+            }
+            Main.ActivePlayers[ev.Player.UserId].AddXP(Main.Instance.Config.AssistXP);
+        }
+
         public void OnKill(DyingEventArgs ev)
         {
             if (ev.Target == null)

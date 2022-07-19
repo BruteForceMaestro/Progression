@@ -53,6 +53,8 @@ namespace XPSystem
                 [RoleType.Scp93989] = 500,
             }
         };
+        [Description("XP gained for 079 on assist")]
+        public int AssistXP { get; set; } = 300;
 
         [Description("How many XP should a player get if their team wins.")]
         public int TeamWinXP { get; set; } = 250;
