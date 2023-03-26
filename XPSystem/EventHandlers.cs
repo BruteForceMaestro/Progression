@@ -1,9 +1,12 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Features;
-using Exiled.Events.EventArgs;
+using Exiled.Events.EventArgs.Player;
+using Exiled.Events.EventArgs.Scp079;
 using System.Linq;
 using MEC;
 using System.Collections.Generic;
+using PlayerRoles;
+using Exiled.Events.EventArgs.Server;
 
 namespace XPSystem
 {
@@ -44,7 +47,7 @@ namespace XPSystem
 
         public void OnAssist(GainingExperienceEventArgs ev)
         {
-            if (ev.GainType != ExpGainType.KillAssist && ev.GainType != ExpGainType.DirectKill && ev.GainType != ExpGainType.PocketAssist)
+            if ((int)ev.GainType > 51 || (int)ev.GainType < 46) // gaintypes for termination of people
             {
                 return;
             }
@@ -57,20 +60,20 @@ namespace XPSystem
 
         public void OnKill(DyingEventArgs ev)
         {
-            if (ev.Target == null)
+            if (ev.Player == null)
             {
                 return;
             }
 
-            Player killer = ev.Handler.Type == DamageType.PocketDimension ? Player.Get(RoleType.Scp106).FirstOrDefault() : ev.Killer;
+            Player killer = ev.DamageHandler.Type == DamageType.PocketDimension ? Player.Get(RoleTypeId.Scp106).FirstOrDefault() : ev.Attacker;
             if (killer == null || killer.DoNotTrack)
             {
                 return;
             }
 
-            if (Main.Instance.Config.KillXP.TryGetValue(killer.Role, out var killxpdict) && killxpdict.TryGetValue(ev.Target.Role, out int xp))
+            if (Main.Instance.Config.KillXP.TryGetValue(killer.Role, out var killxpdict) && killxpdict.TryGetValue(ev.Player.Role, out int xp))
             {
-                Main.ActivePlayers[ev.Killer.UserId].AddXP(xp);
+                Main.ActivePlayers[ev.Attacker.UserId].AddXP(xp);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using Exiled.API.Features;
 using Exiled.API.Interfaces;
+using PlayerRoles;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -20,37 +21,35 @@ namespace XPSystem
         };
 
         [Description("(You may add your own entries) Role1: Role2: XP player with Role1 gets for killing a person with Role2 ")]
-        public Dictionary<RoleType, Dictionary<RoleType, int>> KillXP { get; set; } = new Dictionary<RoleType, Dictionary<RoleType, int>>()
+        public Dictionary<RoleTypeId, Dictionary<RoleTypeId, int>> KillXP { get; set; } = new Dictionary<RoleTypeId, Dictionary<RoleTypeId, int>>()
         {
-            [RoleType.ClassD] = new Dictionary<RoleType, int>()
+            [RoleTypeId.ClassD] = new Dictionary<RoleTypeId, int>()
             {
-                [RoleType.Scientist] = 200,
-                [RoleType.FacilityGuard] = 150,
-                [RoleType.NtfPrivate] = 200,
-                [RoleType.NtfSergeant] = 250,
-                [RoleType.NtfCaptain] = 300,
-                [RoleType.Scp049] = 500,
-                [RoleType.Scp0492] = 100,
-                [RoleType.Scp106] = 500,
-                [RoleType.Scp173] = 500,
-                [RoleType.Scp096] = 500,
-                [RoleType.Scp93953] = 500,
-                [RoleType.Scp93989] = 500,
+                [RoleTypeId.Scientist] = 200,
+                [RoleTypeId.FacilityGuard] = 150,
+                [RoleTypeId.NtfPrivate] = 200,
+                [RoleTypeId.NtfSergeant] = 250,
+                [RoleTypeId.NtfCaptain] = 300,
+                [RoleTypeId.Scp049] = 500,
+                [RoleTypeId.Scp0492] = 100,
+                [RoleTypeId.Scp106] = 500,
+                [RoleTypeId.Scp173] = 500,
+                [RoleTypeId.Scp096] = 500,
+                [RoleTypeId.Scp939] = 500
             },
-            [RoleType.Scientist] = new Dictionary<RoleType, int>()
+            [RoleTypeId.Scientist] = new Dictionary<RoleTypeId, int>()
             {
-                [RoleType.ClassD] = 50,
-                [RoleType.ChaosConscript] = 200,
-                [RoleType.ChaosRifleman] = 200,
-                [RoleType.ChaosRepressor] = 250,
-                [RoleType.ChaosMarauder] = 300,
-                [RoleType.Scp049] = 500,
-                [RoleType.Scp0492] = 100,
-                [RoleType.Scp106] = 500,
-                [RoleType.Scp173] = 500,
-                [RoleType.Scp096] = 500,
-                [RoleType.Scp93953] = 500,
-                [RoleType.Scp93989] = 500,
+                [RoleTypeId.ClassD] = 50,
+                [RoleTypeId.ChaosConscript] = 200,
+                [RoleTypeId.ChaosRifleman] = 200,
+                [RoleTypeId.ChaosRepressor] = 250,
+                [RoleTypeId.ChaosMarauder] = 300,
+                [RoleTypeId.Scp049] = 500,
+                [RoleTypeId.Scp0492] = 100,
+                [RoleTypeId.Scp106] = 500,
+                [RoleTypeId.Scp173] = 500,
+                [RoleTypeId.Scp096] = 500,
+                [RoleTypeId.Scp939] = 500
             }
         };
         [Description("XP gained for 079 on assist")]
@@ -72,10 +71,10 @@ namespace XPSystem
         public string AddedLVLHint { get; set; } = "NEW LEVEL: <color=red>%level%</color>";
 
         [Description("(You may add your own entries) How many XP a player gets for escaping")]
-        public Dictionary<RoleType, int> EscapeXP { get; set; } = new Dictionary<RoleType, int>()
+        public Dictionary<RoleTypeId, int> EscapeXP { get; set; } = new Dictionary<RoleTypeId, int>()
         {
-            [RoleType.ClassD] = 500,
-            [RoleType.Scientist] = 300
+            [RoleTypeId.ClassD] = 500,
+            [RoleTypeId.Scientist] = 300
         };
 
         [Description("(You may add your own entries) Level threshold and a badge. if you get a TAG FAIL in your console, either change your color, or remove special characters like brackets.")]
@@ -115,6 +114,6 @@ namespace XPSystem
         [Description("Override colors for people who already have a rank")]
         public bool OverrideRAColor { get; set; } = false;
         [Description("Do not enable this unless the creator told you to, if you don't wanna be spammed with unhelpful messages of course")]
-        public bool DebugMode { get; set; } = false;
+        public bool Debug { get; set; } = false;
     }
 }

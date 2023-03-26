@@ -57,7 +57,7 @@ namespace XPSystem
                 .Replace("%badge%", badge.Name)
                 .Replace("%oldbadge%", oldBadge);
 
-            Log.Debug(newBadge, Main.Instance.Config.DebugMode);
+            Log.Debug(newBadge);
 
             Player.RankName = newBadge;
         }

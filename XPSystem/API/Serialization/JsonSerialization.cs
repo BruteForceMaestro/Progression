@@ -14,7 +14,7 @@ namespace XPSystem
             foreach (var kvp in Main.ActivePlayers)
             {
                 Main.Players[kvp.Key] = kvp.Value;
-            }
+            }            
             using (FileStream fs = File.Create(SP))
             {
                 JsonSerializer.Serialize(fs, Main.Players);
